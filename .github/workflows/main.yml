@@ -3,13 +3,6 @@ name: Build and Push TheBigTree Container (multi-arch)
 on:
   push:
     branches: [ main, master ]
-    paths:
-      - 'DOckerfile'
-      - 'authorized_keys'
-      - '.github/workflows/main.yml'
-      - 'init.vim'
-      - 'zshrc'
-      - '**/*.sh'
   workflow_dispatch:
 
 env:
