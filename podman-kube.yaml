@@ -1,0 +1,42 @@
+# Example Kubernetes YAML for use with `podman kube play`
+# This defines:
+# - A ConfigMap containing SSH public keys
+# - A Pod running the code-tui container, mounting:
+#     * The SSH keys ConfigMap at /ssh-keys
+#     * A hostPath directory as /work
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: code-tui-ssh-keys
+data:
+  id_ed25519.pub: |
+    ssh-ed25519 AAAA...your-public-key-here... user@example
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: code-tui
+  labels:
+    app: code-tui
+spec:
+  containers:
+    - name: code-tui
+      image: code-tui-ssh-podman-zsh:latest
+      ports:
+        - containerPort: 22
+      volumeMounts:
+        - name: ssh-keys
+          mountPath: /ssh-keys
+          readOnly: true
+        - name: workdir
+          mountPath: /work
+  volumes:
+    - name: ssh-keys
+      configMap:
+        name: code-tui-ssh-keys
+    - name: workdir
+      hostPath:
+        # CHANGE THIS to a directory on your host that you want to use as /work
+        path: /srv/code-tui-work
+        type: DirectoryOrCreate
